@@ -191,6 +191,7 @@ class Media {
   speed: number = 0;
   isBefore: boolean = false;
   isAfter: boolean = false;
+  isHovered: boolean = false;
 
   // Animation states for focus
   targetScale: number = 1;
@@ -377,7 +378,7 @@ class Media {
         this.targetOffset = sign * (this.width * 1.0); 
       }
     } else {
-      this.targetScale = 1;
+      this.targetScale = this.isHovered ? 1.15 : 1;
       this.targetOffset = 0;
     }
 
@@ -491,7 +492,7 @@ class App {
   container: HTMLElement;
   scrollSpeed: number;
   scroll: { ease: number; current: number; target: number; last: number; position: number };
-  onCheckDebounce: () => void;
+  onCheckDebounce: (...args: any[]) => void;
   renderer!: Renderer;
   gl!: OGLRenderingContext;
   camera!: Camera;
@@ -725,6 +726,36 @@ class App {
           if (this.onItemClick) this.onItemClick(null);
       }
   }
+
+  onMouseMove(e: MouseEvent) {
+    if (this.isDown) return;
+    
+    const rect = this.renderer.gl.canvas.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    this.mouse.set(
+        2.0 * (x - rect.left) / rect.width - 1.0,
+        2.0 * (1.0 - (y - rect.top) / rect.height) - 1.0
+    );
+    
+    this.raycast.castMouse(this.camera, this.mouse);
+    const hits = this.raycast.intersectBounds(this.scene.children as any);
+    
+    let hitIndex = -1;
+    if (hits.length > 0) {
+        hitIndex = (hits[0] as any).index;
+        this.container.style.cursor = 'pointer';
+    } else {
+        this.container.style.cursor = 'grab';
+    }
+    
+    if (this.medias) {
+        this.medias.forEach(media => {
+            media.isHovered = (media.index === hitIndex);
+        });
+    }
+  }
   
   focusItem(index: number) {
       // Get the specific media object
@@ -819,6 +850,12 @@ class App {
     
     window.addEventListener("mouseup", this.boundOnTouchUp);
     window.addEventListener("touchend", this.boundOnTouchUp);
+    
+    // Add hover listeners
+    this.container.addEventListener("mousemove", this.onMouseMove);
+    this.container.addEventListener("mouseleave", () => {
+         if (this.medias) this.medias.forEach(m => m.isHovered = false);
+    });
   }
 
   destroy() {
@@ -835,6 +872,9 @@ class App {
     
     window.removeEventListener("mouseup", this.boundOnTouchUp);
     window.removeEventListener("touchend", this.boundOnTouchUp);
+    
+    // Remove hover listener
+    this.container.removeEventListener("mousemove", this.onMouseMove);
 
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
