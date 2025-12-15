@@ -859,7 +859,8 @@ const CircularGallery = ({
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Use ref for callback to avoid re-initializing App when callback changes (e.g. parent re-render)
-  const onItemClickRef = useRef(onItemClick);
+  // Explicitly type ref to avoid inference issues with argument count
+  const onItemClickRef = useRef<((index: number | null) => void) | undefined>(onItemClick);
   
   useEffect(() => {
       onItemClickRef.current = onItemClick;
@@ -885,7 +886,11 @@ const CircularGallery = ({
       font: computedFont,
       scrollSpeed,
       scrollEase,
-      onItemClick: (index) => onItemClickRef.current?.(index)
+      onItemClick: (index) => {
+        if (onItemClickRef.current) {
+          onItemClickRef.current(index);
+        }
+      }
     });
 
     return () => {
