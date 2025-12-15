@@ -72,11 +72,11 @@ const ContactInfo: React.FC = () => {
 
           {/* Map Visual Placeholder */}
           <div className="order-1 lg:order-2 h-[300px] lg:h-auto min-h-[300px] lg:min-h-[400px] bg-slate-200 rounded-3xl overflow-hidden relative shadow-lg group">
-             {/* Since we cannot use a real embedded map without an API key, we use a static image representation linking to the map */}
+             {/* Using externi1 as the map placeholder image */}
              <a href={RESTAURANT_INFO.mapLink} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative cursor-pointer">
                 <img 
-                    src="https://picsum.photos/seed/map_placeholder/800/800?grayscale" 
-                    alt="Mappa Locanda dei Pellegrini" 
+                    src="https://lh3.googleusercontent.com/d/1hk8e8uQ1VLtkb72y4X7K4Ir67cRr-B0h" 
+                    alt="Esterno Locanda dei Pellegrini" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">

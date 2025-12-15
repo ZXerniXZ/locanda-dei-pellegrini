@@ -8,6 +8,8 @@ import {
   Renderer,
   Texture,
   Transform,
+  Raycast,
+  Vec2,
   type OGLRenderingContext,
 } from "ogl";
 import { useEffect, useRef } from "react";
@@ -19,6 +21,7 @@ import { cn } from "../lib/utils";
 export interface GalleryItem {
   image: string;
   text: string;
+  review?: any;
 }
 
 interface CircularGalleryProps
@@ -29,6 +32,7 @@ interface CircularGalleryProps
   scrollSpeed?: number;
   scrollEase?: number;
   fontClassName?: string;
+  onItemClick?: (index: number | null) => void;
 }
 
 /* --------------------------------
@@ -188,6 +192,12 @@ class Media {
   isBefore: boolean = false;
   isAfter: boolean = false;
 
+  // Animation states for focus
+  targetScale: number = 1;
+  currentScale: number = 1;
+  targetOffset: number = 0;
+  currentOffset: number = 0;
+
   constructor({
     geometry,
     gl,
@@ -258,6 +268,7 @@ class Media {
         void main() {
           vUv = uv;
           vec3 p = position;
+          // Subtler wave effect
           p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }
@@ -323,6 +334,8 @@ class Media {
       geometry: this.geometry,
       program: this.program,
     });
+    // Assign index to mesh for Raycasting identification
+    (this.plane as any).index = this.index;
     this.plane.setParent(this.scene);
   }
 
@@ -340,28 +353,79 @@ class Media {
   update(
     scroll: { current: number; last: number },
     direction: "left" | "right",
+    isExpanded: boolean,
   ) {
-    this.plane.position.x = this.x - scroll.current - this.extra;
+    // Base position
+    let x = this.x - scroll.current - this.extra;
 
-    const x = this.plane.position.x;
+    // --- EXPANSION / FOCUS LOGIC ---
+    // Calculate distance from center in screen space
+    // x is the distance from center (0)
+    const centerDist = x; 
+    
+    const isCentered = Math.abs(centerDist) < this.width / 2;
+
+    if (isExpanded) {
+      if (isCentered) {
+        this.targetScale = 1.3; // Slight zoom in
+        this.targetOffset = 0;
+      } else {
+        this.targetScale = 0.8; // Shrink others
+        // Push others away more aggressively to clear space
+        const sign = Math.sign(centerDist);
+        // Ensure they move far enough to not overlap the central zoomed item
+        this.targetOffset = sign * (this.width * 1.0); 
+      }
+    } else {
+      this.targetScale = 1;
+      this.targetOffset = 0;
+    }
+
+    // Smooth animation for scale and offset
+    this.currentScale = lerp(this.currentScale, this.targetScale, 0.08);
+    this.currentOffset = lerp(this.currentOffset, this.targetOffset, 0.08);
+
+    // Apply offset
+    x += this.currentOffset;
+    this.plane.position.x = x;
+    
+    // Apply scale to plane (and its children/title)
+    this.plane.scale.x = this.width * this.currentScale - this.padding * this.currentScale;
+    this.plane.scale.y = this.plane.scale.x * 1.25;
+
+    // Update shader uniforms
+    this.program.uniforms.uPlaneSizes.value = [
+      this.plane.scale.x,
+      this.plane.scale.y,
+    ];
+
+    // --- BENDING LOGIC ---
     const H = this.viewport.width / 2;
+    // Flatten the curve when expanded for better readability
+    const activeBend = isExpanded ? lerp(this.bend, 0, 0.1) : this.bend;
 
-    if (this.bend === 0) {
+    if (activeBend === 0 || Math.abs(activeBend) < 0.01) {
       this.plane.position.y = 0;
       this.plane.rotation.z = 0;
     } else {
-      const B_abs = Math.abs(this.bend);
+      const B_abs = Math.abs(activeBend);
       const R = (H * H + B_abs * B_abs) / (2 * B_abs);
       const effectiveX = Math.min(Math.abs(x), H);
       const arc = R - Math.sqrt(R * R - effectiveX * effectiveX);
 
-      if (this.bend > 0) {
+      if (activeBend > 0) {
         this.plane.position.y = -arc;
         this.plane.rotation.z = -Math.sign(x) * Math.asin(effectiveX / R);
       } else {
         this.plane.position.y = arc;
         this.plane.rotation.z = Math.sign(x) * Math.asin(effectiveX / R);
       }
+    }
+
+    // Apply Y-offset for visual centering when zoomed
+    if (isExpanded && isCentered) {
+        // Lift up slightly to avoid overlapping with bottom overlay
+        this.plane.position.y += 0.3; 
     }
 
     this.speed = scroll.current - scroll.last;
@@ -373,13 +437,16 @@ class Media {
     this.isBefore = this.plane.position.x + planeOffset < -viewportOffset;
     this.isAfter = this.plane.position.x - planeOffset > viewportOffset;
 
-    if (direction === "right" && this.isBefore) {
-      this.extra -= this.widthTotal;
-      this.isBefore = this.isAfter = false;
-    }
-    if (direction === "left" && this.isAfter) {
-      this.extra += this.widthTotal;
-      this.isBefore = this.isAfter = false;
+    // Infinite scroll logic (disable jumping when expanded to prevent glitches)
+    if (!isExpanded) {
+        if (direction === "right" && this.isBefore) {
+            this.extra -= this.widthTotal;
+            this.isBefore = this.isAfter = false;
+        }
+        if (direction === "left" && this.isAfter) {
+            this.extra += this.widthTotal;
+            this.isBefore = this.isAfter = false;
+        }
     }
   }
 
@@ -402,10 +469,13 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
+    
+    // Initial Scale calculation
     this.plane.scale.y =
       (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x =
       (this.viewport.width * (700 * this.scale)) / this.screen.width;
+      
     this.program.uniforms.uPlaneSizes.value = [
       this.plane.scale.x,
       this.plane.scale.y,
@@ -434,11 +504,20 @@ class App {
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
   raf!: number;
+  
+  // Interaction & Focus
+  onItemClick?: (index: number | null) => void;
+  raycast: Raycast;
+  mouse: Vec2;
+  isExpanded: boolean = false;
+  clickStart: { x: number, y: number } = { x: 0, y: 0 };
+
   boundOnResize: () => void;
   boundOnWheel: (e: WheelEvent) => void;
   boundOnTouchDown: (e: MouseEvent | TouchEvent) => void;
   boundOnTouchMove: (e: MouseEvent | TouchEvent) => void;
-  boundOnTouchUp: () => void;
+  boundOnTouchUp: (e: MouseEvent | TouchEvent) => void;
+  boundOnClick: (e: MouseEvent) => void;
 
   constructor(
     container: HTMLElement,
@@ -450,6 +529,7 @@ class App {
       font,
       scrollSpeed,
       scrollEase,
+      onItemClick
     }: {
       items?: GalleryItem[];
       bend: number;
@@ -458,18 +538,25 @@ class App {
       font: string;
       scrollSpeed: number;
       scrollEase: number;
+      onItemClick?: (index: number | null) => void;
     },
   ) {
     this.container = container;
     this.scrollSpeed = scrollSpeed;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0, position: 0 };
     this.onCheckDebounce = debounce(this.onCheck.bind(this), 200);
+    this.onItemClick = onItemClick;
 
     autoBind(this);
 
     this.createRenderer();
     this.createCamera();
     this.createScene();
+    
+    // Init Raycaster
+    this.raycast = new Raycast(this.gl);
+    this.mouse = new Vec2();
+
     this.onResize();
     this.createGeometry();
     this.createMedias(items, bend, textColor, borderRadius, font);
@@ -525,7 +612,7 @@ class App {
     ];
 
     const galleryItems = items && items.length > 0 ? items : defaultItems;
-    this.mediasImages = [...galleryItems, ...galleryItems]; // Duplicate for seamless loop
+    this.mediasImages = [...galleryItems, ...galleryItems];
     this.medias = this.mediasImages.map((data, index) => {
       return new Media({
         geometry: this.planeGeometry,
@@ -549,22 +636,122 @@ class App {
   onTouchDown(e: MouseEvent | TouchEvent) {
     this.isDown = true;
     this.scroll.position = this.scroll.current;
-    this.start = "touches" in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
+    
+    let clientX = 0;
+    let clientY = 0;
+    
+    if ("touches" in e) {
+        const touch = (e as unknown as TouchEvent).touches[0];
+        clientX = touch.clientX;
+        clientY = touch.clientY;
+    } else {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+    }
+    
+    this.start = clientX;
+    this.clickStart = { x: clientX, y: clientY };
   }
 
   onTouchMove(e: MouseEvent | TouchEvent) {
     if (!this.isDown) return;
-    const x = "touches" in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
+    
+    let x = 0;
+    if ("touches" in e) {
+        x = (e as unknown as TouchEvent).touches[0].clientX;
+    } else {
+        x = (e as MouseEvent).clientX;
+    }
+    
     const distance = (this.start - x) * (this.scrollSpeed * 0.025);
     this.scroll.target = this.scroll.position + distance;
+    
+    // If dragging significantly, cancel expanded mode
+    if (Math.abs(distance) > 0.5) {
+        if (this.isExpanded) {
+            this.isExpanded = false;
+            if (this.onItemClick) this.onItemClick(null); // Deselect
+        }
+    }
   }
 
-  onTouchUp() {
+  onTouchUp(e: MouseEvent | TouchEvent) {
     this.isDown = false;
     this.onCheck();
+    
+    // Check for Click
+    let clientX = 0;
+    let clientY = 0;
+    
+    if ("changedTouches" in e) {
+        const touch = (e as unknown as TouchEvent).changedTouches[0];
+        clientX = touch.clientX;
+        clientY = touch.clientY;
+    } else {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+    }
+    
+    const dist = Math.sqrt(
+        Math.pow(clientX - this.clickStart.x, 2) + 
+        Math.pow(clientY - this.clickStart.y, 2)
+    );
+    
+    if (dist < 5) {
+        this.onClick(clientX, clientY);
+    }
+  }
+  
+  onClick(clientX: number, clientY: number) {
+      const rect = this.renderer.gl.canvas.getBoundingClientRect();
+      this.mouse.set(
+          2.0 * (clientX - rect.left) / rect.width - 1.0,
+          2.0 * (1.0 - (clientY - rect.top) / rect.height) - 1.0
+      );
+      
+      this.raycast.castMouse(this.camera, this.mouse);
+      const hits = this.raycast.intersectBounds(this.scene.children as any);
+      
+      if (hits.length > 0) {
+          const hitMesh = hits[0];
+          const index = (hitMesh as any).index;
+          
+          if (index !== undefined) {
+             this.focusItem(index);
+          }
+      } else {
+          // Clicked background -> collapse
+          this.isExpanded = false;
+          if (this.onItemClick) this.onItemClick(null);
+      }
+  }
+  
+  focusItem(index: number) {
+      // Get the specific media object
+      const media = this.medias[index];
+      
+      // Calculate the correct scroll target accounting for infinite scroll loops
+      // We want the final scroll position to result in this item being at center (0)
+      // Visual Position = media.x - scroll - media.extra
+      // To center: 0 = media.x - scroll.target - media.extra
+      // scroll.target = media.x - media.extra
+      
+      const targetScroll = media.x - media.extra;
+      this.scroll.target = targetScroll;
+      
+      this.isExpanded = true;
+      
+      if (this.onItemClick) {
+          this.onItemClick(index);
+      }
   }
 
   onWheel(e: WheelEvent) {
+    if (this.isExpanded) {
+        // Break out of expanded mode on wheel
+        this.isExpanded = false;
+        if (this.onItemClick) this.onItemClick(null);
+    }
     const delta = e.deltaY || (e as any).wheelDelta || e.detail;
     this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2;
     this.onCheckDebounce();
@@ -598,7 +785,7 @@ class App {
     }
   }
 
-  update() {
+  update(t?: number) {
     this.scroll.current = lerp(
       this.scroll.current,
       this.scroll.target,
@@ -606,7 +793,7 @@ class App {
     );
     const direction = this.scroll.current > this.scroll.last ? "right" : "left";
     if (this.medias) {
-      this.medias.forEach((media) => media.update(this.scroll, direction));
+      this.medias.forEach((media) => media.update(this.scroll, direction, this.isExpanded));
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
@@ -614,7 +801,7 @@ class App {
   }
 
   addEventListeners() {
-    this.boundOnResize = this.onResize;
+    this.boundOnResize = () => this.onResize();
     this.boundOnWheel = this.onWheel;
     this.boundOnTouchDown = this.onTouchDown;
     this.boundOnTouchMove = this.onTouchMove;
@@ -623,11 +810,14 @@ class App {
     window.addEventListener("resize", this.boundOnResize);
     window.addEventListener("mousewheel", this.boundOnWheel);
     window.addEventListener("wheel", this.boundOnWheel);
+    
     this.container.addEventListener("mousedown", this.boundOnTouchDown);
-    window.addEventListener("mousemove", this.boundOnTouchMove);
-    window.addEventListener("mouseup", this.boundOnTouchUp);
     this.container.addEventListener("touchstart", this.boundOnTouchDown);
+    
+    window.addEventListener("mousemove", this.boundOnTouchMove);
     window.addEventListener("touchmove", this.boundOnTouchMove);
+    
+    window.addEventListener("mouseup", this.boundOnTouchUp);
     window.addEventListener("touchend", this.boundOnTouchUp);
   }
 
@@ -636,11 +826,14 @@ class App {
     window.removeEventListener("resize", this.boundOnResize);
     window.removeEventListener("mousewheel", this.boundOnWheel);
     window.removeEventListener("wheel", this.boundOnWheel);
+    
     this.container.removeEventListener("mousedown", this.boundOnTouchDown);
-    window.removeEventListener("mousemove", this.boundOnTouchMove);
-    window.removeEventListener("mouseup", this.boundOnTouchUp);
     this.container.removeEventListener("touchstart", this.boundOnTouchDown);
+    
+    window.removeEventListener("mousemove", this.boundOnTouchMove);
     window.removeEventListener("touchmove", this.boundOnTouchMove);
+    
+    window.removeEventListener("mouseup", this.boundOnTouchUp);
     window.removeEventListener("touchend", this.boundOnTouchUp);
 
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
@@ -660,14 +853,21 @@ const CircularGallery = ({
   scrollEase = 0.05,
   className,
   fontClassName,
+  onItemClick,
   ...props
 }: CircularGalleryProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Use ref for callback to avoid re-initializing App when callback changes (e.g. parent re-render)
+  const onItemClickRef = useRef(onItemClick);
+  
+  useEffect(() => {
+      onItemClickRef.current = onItemClick;
+  }, [onItemClick]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Get computed styles for theme-adaptive text
     const computedStyle = getComputedStyle(containerRef.current);
     const computedColor = computedStyle.color || "hsl(var(--foreground))";
     const computedFontWeight = computedStyle.fontWeight || "bold";
@@ -676,6 +876,7 @@ const CircularGallery = ({
 
     const computedFont = `${computedFontWeight} ${computedFontSize} ${computedFontFamily}`;
 
+    // Pass a proxy function to App that calls the latest ref
     const app = new App(containerRef.current, {
       items,
       bend,
@@ -684,11 +885,13 @@ const CircularGallery = ({
       font: computedFont,
       scrollSpeed,
       scrollEase,
+      onItemClick: (index) => onItemClickRef.current?.(index)
     });
 
     return () => {
       app.destroy();
     };
+    // Removed onItemClick from dependencies to prevent destructive re-init
   }, [items, bend, borderRadius, scrollSpeed, scrollEase, fontClassName]);
 
   return (
@@ -696,7 +899,6 @@ const CircularGallery = ({
       ref={containerRef}
       className={cn(
         "w-full h-full overflow-hidden cursor-grab active:cursor-grabbing",
-        // Apply theme-aware defaults for getComputedStyle to read
         "text-foreground font-bold text-[30px]",
         fontClassName,
         className,

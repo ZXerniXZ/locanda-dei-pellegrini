@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, UtensilsCrossed } from 'lucide-react';
+import { Menu, X, Phone } from 'lucide-react';
 import { RESTAURANT_INFO } from '../constants';
 import { cn } from '../lib/utils';
 
@@ -43,12 +43,16 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             
             {/* Logo */}
-            <div className="flex-shrink-0 flex items-center gap-2 relative z-50">
+            <div className="flex-shrink-0 flex items-center gap-3 relative z-50">
               <div className={cn(
-                "p-2 rounded-full text-white transition-colors",
-                scrolled || isOpen ? "bg-brand-gold" : "bg-brand-gold/90 backdrop-blur-sm"
+                "rounded-full overflow-hidden border-2 transition-colors",
+                scrolled || isOpen ? "border-brand-gold" : "border-white/80"
               )}>
-                <UtensilsCrossed size={20} />
+                <img 
+                  src="https://lh3.googleusercontent.com/d/1fukQ2ADVtLG5D9lYWplCM-Oz5if8TUXh" 
+                  alt="Logo La Locanda dei Pellegrini"
+                  className="w-10 h-10 object-cover"
+                />
               </div>
               <span className={cn(
                 "font-display font-bold text-xl leading-tight transition-colors",

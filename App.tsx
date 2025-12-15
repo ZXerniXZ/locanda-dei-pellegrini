@@ -3,7 +3,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import GallerySection from './components/GallerySection';
 import Features from './components/Features';
-import MenuSection from './components/MenuSection';
+import TripAdvisorSection from './components/TripAdvisorSection';
 import Testimonials from './components/Testimonials';
 import ContactInfo from './components/ContactInfo';
 import Footer from './components/Footer';
@@ -17,7 +17,7 @@ const App: React.FC = () => {
         <Hero />
         <GallerySection />
         <Features />
-        <MenuSection />
+        <TripAdvisorSection />
         <Testimonials />
         <ContactInfo />
       </main>

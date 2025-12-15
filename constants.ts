@@ -6,6 +6,7 @@ export const RESTAURANT_INFO = {
   address: "Via Quintino di Vona 31, 20062 Cassano d'Adda (MI)",
   phone: "+39 348 982 1133",
   mapLink: "https://www.google.com/maps/search/?api=1&query=Via+Quintino+di+Vona+31+Cassano+d'Adda",
+  tripAdvisorLink: "https://www.tripadvisor.it/Restaurant_Review-g1826736-d12713142-Reviews-La_Locanda_dei_Pellegrini-Cassano_d_Adda_Province_of_Milan_Lombardy.html?m=69573",
   tagline: "Sapori di mare e forno a legna: il gusto autentico a Cassano d'Adda.",
   subTagline: "Dove ogni piatto ha un’anima — e ogni serata un profumo di tradizione."
 };

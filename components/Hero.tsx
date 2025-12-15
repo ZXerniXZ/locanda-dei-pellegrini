@@ -8,8 +8,8 @@ const Hero: React.FC = () => {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://picsum.photos/seed/restaurant_interior_warm/1920/1080"
-          alt="Interno Ristorante"
+          src="https://lh3.googleusercontent.com/d/1Ou04iCRZaiQo1lzyenwsfk3sjlHJpf_4"
+          alt="Interno Ristorante La Locanda dei Pellegrini"
           className="w-full h-full object-cover animate-fade-in"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"></div>
