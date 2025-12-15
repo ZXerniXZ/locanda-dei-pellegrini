@@ -4,24 +4,24 @@ import { MapPin, Phone, Clock } from 'lucide-react';
 
 const ContactInfo: React.FC = () => {
   return (
-    <section id="contatti" className="py-20 bg-white">
+    <section id="contatti" className="py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           
           {/* Info & Hours */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-8">
+          <div className="order-2 lg:order-1">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-8 text-center lg:text-left">
               Orari & Posizione
             </h2>
             
             <div className="space-y-8">
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 text-center sm:text-left items-center sm:items-start">
                 <div className="flex-shrink-0 w-12 h-12 bg-brand-cream rounded-full flex items-center justify-center text-brand-blue">
                   <MapPin size={24} />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-slate-900">Indirizzo</h3>
-                  <p className="text-slate-600 mb-2">{RESTAURANT_INFO.address}</p>
+                  <p className="text-slate-600 mb-2 max-w-xs mx-auto sm:mx-0">{RESTAURANT_INFO.address}</p>
                   <a 
                     href={RESTAURANT_INFO.mapLink}
                     target="_blank"
@@ -33,13 +33,13 @@ const ContactInfo: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 text-center sm:text-left items-center sm:items-start">
                 <div className="flex-shrink-0 w-12 h-12 bg-brand-cream rounded-full flex items-center justify-center text-brand-blue">
                   <Phone size={24} />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-slate-900">Telefono</h3>
-                  <p className="text-slate-600 mb-2">Consigliata la prenotazione, soprattutto nel weekend.</p>
+                  <p className="text-slate-600 mb-2 text-sm">Consigliata la prenotazione.</p>
                   <a 
                     href={`tel:${RESTAURANT_INFO.phone.replace(/\s/g, '')}`}
                     className="text-xl font-bold text-slate-900 hover:text-brand-gold transition-colors"
@@ -50,17 +50,17 @@ const ContactInfo: React.FC = () => {
               </div>
 
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4 justify-center sm:justify-start">
                     <Clock className="text-brand-gold" size={24} />
                     <h3 className="font-bold text-lg text-slate-900">Orari di Apertura</h3>
                 </div>
                 <div className="space-y-2">
                   {WORK_HOURS.map((schedule, idx) => (
-                    <div key={idx} className="flex justify-between text-sm sm:text-base border-b border-slate-200 last:border-0 pb-2 last:pb-0">
-                      <span className="font-medium text-slate-700 w-24">{schedule.day}</span>
+                    <div key={idx} className="flex justify-between text-sm border-b border-slate-200 last:border-0 pb-2 last:pb-0">
+                      <span className="font-medium text-slate-700 w-20">{schedule.day}</span>
                       <div className="text-right text-slate-500 flex-1">
                         <span className="block sm:inline">{schedule.lunch}</span>
-                        <span className="hidden sm:inline mx-2 text-slate-300">|</span>
+                        <span className="hidden sm:inline mx-1 text-slate-300">|</span>
                         <span className="block sm:inline">{schedule.dinner}</span>
                       </div>
                     </div>
@@ -71,7 +71,7 @@ const ContactInfo: React.FC = () => {
           </div>
 
           {/* Map Visual Placeholder */}
-          <div className="h-full min-h-[400px] bg-slate-200 rounded-3xl overflow-hidden relative shadow-lg group">
+          <div className="order-1 lg:order-2 h-[300px] lg:h-auto min-h-[300px] lg:min-h-[400px] bg-slate-200 rounded-3xl overflow-hidden relative shadow-lg group">
              {/* Since we cannot use a real embedded map without an API key, we use a static image representation linking to the map */}
              <a href={RESTAURANT_INFO.mapLink} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative cursor-pointer">
                 <img 

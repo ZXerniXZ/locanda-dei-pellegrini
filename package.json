@@ -2,6 +2,7 @@
   "name": "la-locanda-dei-pellegrini",
   "version": "1.0.0",
   "description": "Sito web ufficiale del ristorante La Locanda dei Pellegrini",
+  "type": "module",
   "main": "index.tsx",
   "scripts": {
     "dev": "vite",
@@ -12,13 +13,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "lucide-react": "^0.344.0",
-    "framer-motion": "^11.0.8"
+    "framer-motion": "^11.0.8",
+    "ogl": "^1.0.11",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
     "typescript": "^4.9.5",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.1.4"
-  }
-}
+    "@types/
