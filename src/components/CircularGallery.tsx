@@ -744,6 +744,10 @@ class App {
           if (this.onItemClick) this.onItemClick(null);
       }
   }
+  
+  collapse() {
+      this.isExpanded = false;
+  }
 
   onMouseMove(e: MouseEvent) {
     if (this.isDown) return;
@@ -844,7 +848,7 @@ class App {
     if (this.medias) {
       this.medias.forEach((media) => media.update(this.scroll, direction, this.isExpanded));
     }
-    this.renderer.render({ scene: this.scene, camera: this.camera });
+    (this.renderer.render as any)({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
     this.raf = window.requestAnimationFrame(this.update);
   }

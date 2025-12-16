@@ -33,6 +33,7 @@ interface CircularGalleryProps
   scrollEase?: number;
   fontClassName?: string;
   onItemClick?: (index: number | null) => void;
+  activeIndex?: number | null;
   className?: string;
 }
 
@@ -744,6 +745,10 @@ class App {
           if (this.onItemClick) this.onItemClick(null);
       }
   }
+  
+  collapse() {
+      this.isExpanded = false;
+  }
 
   onMouseMove(e: MouseEvent) {
     if (this.isDown) return;
@@ -844,7 +849,7 @@ class App {
     if (this.medias) {
       this.medias.forEach((media) => media.update(this.scroll, direction, this.isExpanded));
     }
-    this.renderer.render({ scene: this.scene, camera: this.camera });
+    (this.renderer.render as any)({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
     this.raf = window.requestAnimationFrame(this.update);
   }
@@ -912,9 +917,11 @@ const CircularGallery = ({
   className,
   fontClassName,
   onItemClick,
+  activeIndex,
   ...props
 }: CircularGalleryProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<App | null>(null);
   
   // Use ref for callback to avoid re-initializing App when callback changes (e.g. parent re-render)
   // Explicitly type ref to avoid inference issues with argument count
@@ -923,6 +930,13 @@ const CircularGallery = ({
   useEffect(() => {
       onItemClickRef.current = onItemClick;
   }, [onItemClick]);
+
+  // Sync effect for external collapse trigger
+  useEffect(() => {
+    if (appRef.current && activeIndex === null) {
+       appRef.current.collapse();
+    }
+  }, [activeIndex]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -950,9 +964,12 @@ const CircularGallery = ({
         }
       }
     });
+    
+    appRef.current = app;
 
     return () => {
       app.destroy();
+      appRef.current = null;
     };
     // Removed onItemClick from dependencies to prevent destructive re-init
   }, [items, bend, borderRadius, scrollSpeed, scrollEase, fontClassName]);

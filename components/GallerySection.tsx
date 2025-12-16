@@ -96,6 +96,15 @@ const GallerySection: React.FC = () => {
 
   return (
     <section id="cucina" className="py-16 md:py-24 bg-brand-cream relative overflow-hidden">
+        {/* Backdrop for closing when clicking anywhere */}
+        {activeItemIndex !== null && (
+          <div 
+            className="fixed inset-0 z-20 bg-transparent cursor-auto"
+            onClick={() => handleItemClick(null)}
+            aria-hidden="true"
+          />
+        )}
+
         <div className="absolute top-0 left-0 w-full h-24 md:h-32 bg-gradient-to-b from-white/90 to-transparent z-10 pointer-events-none"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 md:mb-12 text-center relative z-20">
@@ -107,7 +116,7 @@ const GallerySection: React.FC = () => {
             </p>
         </div>
 
-        <div className="relative h-[450px] md:h-[700px] w-full">
+        <div className="relative h-[450px] md:h-[700px] w-full z-40">
             <CircularGallery
                 items={galleryItems}
                 bend={2}
@@ -115,6 +124,7 @@ const GallerySection: React.FC = () => {
                 scrollEase={0.05}
                 className="font-display font-bold text-white text-3xl md:text-4xl"
                 onItemClick={handleItemClick}
+                activeIndex={activeItemIndex}
             />
 
             {/* Interaction Hint */}
@@ -133,7 +143,10 @@ const GallerySection: React.FC = () => {
                 className="absolute bottom-4 left-0 right-0 z-30 flex justify-center px-4 animate-fade-in-up"
                 style={{ animationDuration: '0.5s' }}
               >
-                <div className="bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200/50 text-left">
+                <div 
+                    className="bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200/50 text-left cursor-pointer pointer-events-auto"
+                    onClick={() => handleItemClick(null)}
+                >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-brand-cream rounded-full flex items-center justify-center text-brand-gold">
