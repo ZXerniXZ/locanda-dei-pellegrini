@@ -107,7 +107,7 @@ const GallerySection: React.FC = () => {
             </p>
         </div>
 
-        <div className="relative h-[600px] md:h-[700px] w-full">
+        <div className="relative h-[450px] md:h-[700px] w-full">
             <CircularGallery
                 items={galleryItems}
                 bend={2}
