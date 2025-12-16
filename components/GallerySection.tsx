@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { CircularGallery, type GalleryItem } from './CircularGallery';
-import { Quote, Star, User, Calendar } from 'lucide-react';
+import { Quote, Star, User, Calendar, MousePointerClick } from 'lucide-react';
 
 interface ExtendedGalleryItem extends GalleryItem {
   review: {
@@ -116,6 +116,16 @@ const GallerySection: React.FC = () => {
                 className="font-display font-bold text-white text-3xl md:text-4xl"
                 onItemClick={handleItemClick}
             />
+
+            {/* Interaction Hint */}
+            {!activeReview && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                <div className="bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-lg border border-white/50 text-brand-blue font-bold text-sm flex items-center gap-2 animate-bounce">
+                  <MousePointerClick className="w-4 h-4 text-brand-gold" />
+                  <span>Clicca per scoprire</span>
+                </div>
+              </div>
+            )}
 
             {/* Review Overlay */}
             {activeReview && (

@@ -510,7 +510,7 @@ class App {
   container: HTMLElement;
   scrollSpeed: number;
   scroll: { ease: number; current: number; target: number; last: number; position: number };
-  onCheckDebounce: (...args: any[]) => void;
+  onCheckDebounce: () => void;
   renderer!: Renderer;
   gl!: OGLRenderingContext;
   camera!: Camera;
@@ -563,7 +563,7 @@ class App {
     this.container = container;
     this.scrollSpeed = scrollSpeed;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0, position: 0 };
-    this.onCheckDebounce = debounce(this.onCheck, 200) as (...args: any[]) => void;
+    this.onCheckDebounce = debounce(this.onCheck, 200);
     this.onItemClick = onItemClick;
 
     autoBind(this);
