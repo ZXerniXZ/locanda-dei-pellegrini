@@ -45,13 +45,13 @@ const Header: React.FC = () => {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center gap-3 relative z-50">
               <div className={cn(
-                "rounded-full overflow-hidden border-2 transition-colors",
-                scrolled || isOpen ? "border-brand-gold" : "border-white/80"
+                "rounded-full overflow-hidden border-2 bg-white transition-colors",
+                scrolled || isOpen ? "border-brand-gold" : "border-white"
               )}>
                 <img 
-                  src="https://lh3.googleusercontent.com/d/1fukQ2ADVtLG5D9lYWplCM-Oz5if8TUXh" 
-                  alt="Logo La Locanda dei Pellegrini"
-                  className="w-10 h-10 object-cover"
+                  src="/images/logo.jpg" 
+                  alt=""
+                  className="w-11 h-11 object-contain"
                 />
               </div>
               <span className={cn(

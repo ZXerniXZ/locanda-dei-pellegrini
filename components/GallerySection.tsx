@@ -15,7 +15,7 @@ interface ExtendedGalleryItem extends GalleryItem {
 
 const galleryItems: ExtendedGalleryItem[] = [
   { 
-    image: "https://lh3.googleusercontent.com/d/1vDqdTnmscD1wfiJnLbBCgD4klUO3JUNk", 
+    image: "/images/galleria-pizze.jpg", 
     text: "Pizze Speciali",
     review: {
       author: "Journey13195400893",
@@ -27,7 +27,7 @@ const galleryItems: ExtendedGalleryItem[] = [
     }
   },
   { 
-    image: "https://lh3.googleusercontent.com/d/1WhRE8R2Y_YEnRZ76WqqV53tyWxlj0D8l", 
+    image: "/images/galleria-pesce.jpg", 
     text: "Pesce Fresco",
     review: {
       author: "Fam ASD",
@@ -38,7 +38,7 @@ const galleryItems: ExtendedGalleryItem[] = [
     }
   },
   { 
-    image: "https://lh3.googleusercontent.com/d/17H6xu6WLrE-A0l2rWQX7Pae-GuRSHQNK", 
+    image: "/images/galleria-primi.jpg", 
     text: "Primi Piatti",
     review: {
       author: "Viola",
@@ -49,7 +49,7 @@ const galleryItems: ExtendedGalleryItem[] = [
     }
   },
   { 
-    image: "https://lh3.googleusercontent.com/d/1MqLn86mwjJhjeHPDZpF4iXAUoO69hi-1", 
+    image: "/images/galleria-secondi.jpg", 
     text: "Secondi",
     review: {
       author: "Marika G",
@@ -60,7 +60,7 @@ const galleryItems: ExtendedGalleryItem[] = [
     }
   },
   { 
-    image: "https://lh3.googleusercontent.com/d/1YN1HjhyogKWNjWaNSyesTZGNdd7Rz2K7", 
+    image: "/images/galleria-dolci.jpg", 
     text: "Dolci Fatti in Casa",
     review: {
       author: "Luke",
@@ -72,7 +72,7 @@ const galleryItems: ExtendedGalleryItem[] = [
     }
   },
   { 
-    image: "https://lh3.googleusercontent.com/d/1NCb67jxm5IgIx0e9XwvKspTK-FnQmyp4", 
+    image: "/images/galleria-aperitivi.jpg", 
     text: "Aperitivi",
     review: {
       author: "Oscar A",

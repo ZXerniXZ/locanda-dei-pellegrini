@@ -8,7 +8,7 @@ const Hero: React.FC = () => {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://lh3.googleusercontent.com/d/1Ou04iCRZaiQo1lzyenwsfk3sjlHJpf_4"
+          src="/images/hero-sala.jpg"
           alt="Interno Ristorante La Locanda dei Pellegrini"
           className="w-full h-full object-cover animate-fade-in"
         />

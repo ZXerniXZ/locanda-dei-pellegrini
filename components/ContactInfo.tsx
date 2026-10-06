@@ -75,7 +75,7 @@ const ContactInfo: React.FC = () => {
              {/* Using externi1 as the map placeholder image */}
              <a href={RESTAURANT_INFO.mapLink} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative cursor-pointer">
                 <img 
-                    src="https://lh3.googleusercontent.com/d/1hk8e8uQ1VLtkb72y4X7K4Ir67cRr-B0h" 
+                    src="/images/esterno-giardino.jpg" 
                     alt="Esterno Locanda dei Pellegrini" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

@@ -58,20 +58,20 @@ export const HIGHLIGHTS: MenuItem[] = [
     name: "Frittura di Paranza",
     description: "Pesce fresco di giornata, croccante e asciutto, servito con verdurine pastellate.",
     category: "pesce",
-    image: "https://picsum.photos/seed/seafood1/600/400"
+    image: "/images/frittura.jpg"
   },
   {
     id: 2,
     name: "Pizza Regina",
     description: "Impasto lievitato 48h, pomodoro San Marzano DOP, mozzarella di bufala e basilico fresco.",
     category: "pizza",
-    image: "https://picsum.photos/seed/pizza1/600/400"
+    image: "/images/pizza.jpg"
   },
   {
     id: 3,
     name: "Tiramisù della Casa",
     description: "Il nostro fiore all'occhiello. Preparato ogni mattina secondo la ricetta tradizionale.",
     category: "dolci",
-    image: "https://picsum.photos/seed/tiramisu/600/400"
+    image: "/images/tiramisu.jpg"
   }
 ];
