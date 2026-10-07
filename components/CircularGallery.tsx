@@ -8,8 +8,7 @@ import {
   Renderer,
   Texture,
   Transform,
-  Raycast,
-  Vec2,
+  Vec3,
   type OGLRenderingContext,
 } from "ogl";
 import React, { useEffect, useRef } from "react";
@@ -50,6 +49,57 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
 
 function lerp(p1: number, p2: number, t: number) {
   return p1 + (p2 - p1) * t;
+}
+
+const projectScratch = new Vec3();
+
+function pointInPoly(px: number, py: number, poly: { x: number; y: number }[]) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i].x;
+    const yi = poly[i].y;
+    const xj = poly[j].x;
+    const yj = poly[j].y;
+    const intersect =
+      yi > py !== yj > py &&
+      px < ((xj - xi) * (py - yi)) / (yj - yi || 1e-6) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+class TextureCache {
+  gl: OGLRenderingContext;
+  map = new Map<string, { texture: Texture; w: number; h: number; ready: boolean; waiters: Array<(w: number, h: number) => void> }>();
+  onUpdate: () => void = () => {};
+
+  constructor(gl: OGLRenderingContext) {
+    this.gl = gl;
+  }
+
+  acquire(url: string, onReady: (w: number, h: number) => void) {
+    let entry = this.map.get(url);
+    if (!entry) {
+      const texture = new Texture(this.gl, { generateMipmaps: true });
+      entry = { texture, w: 0, h: 0, ready: false, waiters: [] };
+      this.map.set(url, entry);
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        texture.image = img;
+        entry!.w = img.naturalWidth;
+        entry!.h = img.naturalHeight;
+        entry!.ready = true;
+        entry!.waiters.forEach((fn) => fn(entry!.w, entry!.h));
+        entry!.waiters = [];
+        this.onUpdate();
+      };
+      img.src = url;
+    }
+    if (entry.ready) onReady(entry.w, entry.h);
+    else entry.waiters.push(onReady);
+    return entry.texture;
+  }
 }
 
 function autoBind(instance: object) {
