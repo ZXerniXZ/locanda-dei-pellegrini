@@ -23,7 +23,7 @@ const TripAdvisorCard = () => (
         {/* Official Logo */}
         <div className="mb-4">
             <img 
-                src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_slate.svg" 
+                src="/images/tripadvisor-logo.svg" 
                 alt="Tripadvisor" 
                 className="h-6 md:h-8"
             />
@@ -96,7 +96,7 @@ const TripAdvisorCard = () => (
             rel="noopener noreferrer"
             >
                 <img 
-                src="https://www.tripadvisor.com/img/cdsi/img2/awards/v2/tc_2024_L-14348-2.png" 
+                src="/images/tripadvisor-choice-2024.png" 
                 alt="Travelers' Choice 2024" 
                 className="w-20 md:w-28 hover:opacity-90 transition-opacity"
                 />

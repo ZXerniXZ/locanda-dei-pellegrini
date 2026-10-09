@@ -14,13 +14,13 @@ const Features: React.FC = () => {
         {/* Header Section */}
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="text-brand-gold font-bold tracking-widest uppercase text-xs md:text-sm mb-3 block">
-            L'Esperienza
+            Lorem ipsum
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-slate-900 mb-6 leading-tight">
-            Molto più di un <br/> semplice ristorante
+            Dolor sit amet <br/> consectetur elit
           </h2>
           <p className="text-lg text-slate-600 font-light leading-relaxed">
-            Abbiamo curato ogni dettaglio per farvi sentire a casa. Dagli spazi all'aperto all'attenzione per i più piccoli, la Locanda è pensata per il vostro benessere.
+            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.
           </p>
         </div>
 
@@ -34,9 +34,9 @@ const Features: React.FC = () => {
                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-4 text-brand-gold">
                   <Wine size={24} />
                </div>
-               <h3 className="text-xl font-display font-bold mb-2">Accoglienza Calda</h3>
+               <h3 className="text-xl font-display font-bold mb-2">Lorem ipsum</h3>
                <p className="text-blue-100 text-sm leading-relaxed">
-                 Dall'aperitivo di benvenuto al digestivo offerto, ogni gesto è pensato per coccolarvi. Per noi non siete clienti, siete ospiti.
+                 Dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                </p>
              </div>
           </div>
@@ -46,9 +46,9 @@ const Features: React.FC = () => {
              <div className="w-12 h-12 bg-brand-gold/20 rounded-2xl flex items-center justify-center mb-4 text-brand-gold group-hover:scale-110 transition-transform">
                 <Baby size={24} />
              </div>
-             <h3 className="text-lg font-bold text-slate-800 mb-2">Per le Famiglie</h3>
+             <h3 className="text-lg font-bold text-slate-800 mb-2">Adipiscing elit</h3>
              <p className="text-slate-600 text-sm">
-               Seggioloni, menù dedicati e la pazienza che serve. I bambini sono i benvenuti.
+               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
              </p>
           </div>
 
@@ -57,9 +57,9 @@ const Features: React.FC = () => {
              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-600 group-hover:scale-110 transition-transform">
                 <Accessibility size={24} />
              </div>
-             <h3 className="text-lg font-bold text-slate-800 mb-2">Senza Barriere</h3>
+             <h3 className="text-lg font-bold text-slate-800 mb-2">Tempor incididunt</h3>
              <p className="text-slate-600 text-sm">
-               Spazi ampi e servizi accessibili per garantire a tutti una serata piacevole.
+               Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.
              </p>
           </div>
 
@@ -67,18 +67,18 @@ const Features: React.FC = () => {
           <div className="md:col-span-3 lg:col-span-4 bg-white border border-slate-100 rounded-[2rem] p-6 md:p-8 flex items-center justify-between shadow-sm hover:shadow-lg transition-all duration-300">
              <div className="flex flex-col md:flex-row md:items-center gap-6 w-full justify-between">
                 <div>
-                   <h3 className="text-lg font-bold text-slate-800 mb-1">Comfort & Servizi</h3>
-                   <p className="text-slate-500 text-sm">Tutto ciò che serve per una cena senza pensieri.</p>
+                   <h3 className="text-lg font-bold text-slate-800 mb-1">Magna aliqua</h3>
+                   <p className="text-slate-500 text-sm">Excepteur sint occaecat cupidatat non proident.</p>
                 </div>
                 <div className="flex gap-3 flex-wrap">
                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-xs font-bold text-slate-600 border border-slate-200">
-                      <Wifi size={14} /> Wi-Fi Free
+                      <Wifi size={14} /> Lorem ipsum
                    </div>
                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-xs font-bold text-slate-600 border border-slate-200">
-                      <Car size={14} /> Parcheggio Facile
+                      <Car size={14} /> Dolor sit
                    </div>
                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-xs font-bold text-slate-600 border border-slate-200">
-                      <Music size={14} /> Musica Ambiente
+                      <Music size={14} /> Amet elit
                    </div>
                 </div>
              </div>
