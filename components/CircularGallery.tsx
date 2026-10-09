@@ -8,6 +8,8 @@ import {
   Renderer,
   Texture,
   Transform,
+  Raycast,
+  Vec2,
   Vec3,
   type OGLRenderingContext,
 } from "ogl";
